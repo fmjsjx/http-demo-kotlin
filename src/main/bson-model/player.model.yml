@@ -1,0 +1,130 @@
+java-package: com.github.fmjsjx.demo.http.core.entity.model
+
+models:
+- name: Player
+  type: root
+  fields:
+  - name: COLLECTION_NAME
+    type: string const
+    value: player
+  - name: uid _id
+    type: long required
+  - name: preferences pfc
+    type: object required
+    model: PreferencesInfo
+  - name: basic bsc
+    type: object required
+    model: BasicInfo
+  - name: login lgn
+    type: object required
+    model: LoginInfo
+  - name: guide gd
+    type: object required
+    model: GuideInfo
+  - name: wallet wlt
+    type: object required
+    model: WalletInfo
+  - name: items itm
+    type: map required
+    key: int
+    value: int
+  - name: statistics stc
+    type: object required
+    model: StatisticsInfo
+  - name: daily dly
+    type: object required
+    model: DailyInfo
+  - name: updateVersion _uv
+    type: int required increment-1 hidden
+  - name: createTime _ct
+    type: datetime required hidden
+  - name: updateTime _ut
+    type: datetime required hidden
+- name: PreferencesInfo
+  type: object
+  fields:
+  - name: custom ctm
+    type: string
+  - name: features fts
+    type: std-list
+    value: string
+  - name: attributes atr
+    type: map required
+    key: string
+    value: string
+- name: BasicInfo
+  type: object
+  fields:
+  - name: nickname nn
+    type: string
+  - name: faceId fi
+    type: int required
+  - name: faceUrl fu
+    type: string
+- name: LoginInfo
+  type: object
+  fields:
+  - name: count cnt
+    type: int required increment-1
+  - name: days d
+    type: int required increment-1
+  - name: continuousDays cnd
+    type: int required increment-1
+  - name: maxContinuousDays mcd
+    type: int required
+  - name: gamingDays gmd
+    type: int required
+  - name: maxGamingDays mgd
+    type: int required
+  - name: ip
+    type: string
+  - name: loginTime lgt
+    type: datetime hidden
+- name: GuideInfo
+  type: object
+  fields:
+  - name: status s
+    type: int required
+- name: WalletInfo
+  type: object
+  fields:
+  - name: coinTotal ct
+    type: int required
+  - name: coinUsed cu
+    type: int required hidden
+  - name: coin
+    type: int required virtual
+    sources:
+    - coinTotal
+    - coinUsed
+    lambda: coinTotal - coinUsed
+  - name: diamond b
+    type: int required
+- name: StatisticsInfo
+  type: object
+  fields:
+  - name: videoCount vct
+    type: int required increment-1
+  - name: videoCounts vcs
+    type: map required hidden
+    key: int
+    value: int
+  - name: gamingCount gct
+    type: int required increment-1
+- name: DailyInfo
+  type: object
+  fields:
+  - name: day
+    type: int required hidden
+  - name: coin cn
+    type: int required
+  - name: diamond dm
+    type: int required
+  - name: videoCount vdc
+    type: int required increment-1
+  - name: videoCounts vdcs
+    type: map required hidden
+    key: int
+    value: int
+  - name: gamingCount gct
+    type: int required increment-1

@@ -1,0 +1,37 @@
+logging:
+  level:
+    '[com.github.fmjsjx.demo.http]': debug
+    '[com.github.fmjsjx]': debug
+
+spring:
+  r2dbc:
+    url: 'r2dbc:mysql://root:root@192.168.24.66:31606/http_demo_db?useServerPrepareStatement=true&forceConnectionTimeZoneToSession=true'
+    pool:
+      enabled: true
+      validation-depth: remote
+      validation-query: "select 'x'"
+      initial-size: 1
+      min-idle: 1
+      max-size: 4
+      max-idle-time: 10m
+      max-life-time: 2h
+
+myboot:
+  redis:
+    lettuce:
+      client:
+        connections:
+        - name: global
+          uri: redis://192.168.20.162:6379/11
+  mongodb:
+    clients:
+    - name: demo
+      driver: reactivestreams
+      primary: true
+      uri: mongodb://127.0.0.1:27017
+      databases:
+      - name: http_demo_db1
+        id: demo1
+      - name: http_demo_db2
+        id: demo2
+

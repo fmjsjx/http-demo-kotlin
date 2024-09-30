@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: http-demo-kotlin
+
+logging:
+  level:
+    root: info
+    accessLogger: info
+  file:
+    name: logs/http-demo.log
+    path: logs
+  logback:
+    rollingpolicy:
+      max-file-size: 200MB
+      max-history: 30
+
+myboot:
+  http:
+    router:
+      auto-init: true
+      routing-policy: auto
