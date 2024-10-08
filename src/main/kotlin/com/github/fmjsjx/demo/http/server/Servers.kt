@@ -67,7 +67,7 @@ class Servers(
             .applyCompressionOptions(HttpContentCompressorProvider.defaultOptions())
         server.defaultHandlerProvider()
             .addLast(AccessLogger(Slf4jLoggerWrapper("accessLogger"), http.accessLogPattern))
-            .addLast(PathFilterMiddleware.toFilter("/api/auth").negate(), accessTokenValidator)
+            .addLast(PathFilterMiddleware.toFilter("/api/v1/auth").negate(), accessTokenValidator)
             .addLast(router)
             .lastChain(NotFoundMiddlewareChain)
         this.httpServer = server

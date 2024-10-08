@@ -25,7 +25,7 @@ class AccessTokenService(
         private val logger = LoggerFactory.getLogger(AccessTokenService::class.java)
 
         private const val ACCESS_TOKEN_LEN = 24
-        private const val ACCESS_TOKEN_ALIVE_SECONDS: Long = 86400
+        private const val ACCESS_TOKEN_TTL: Long = 86400
         private const val CONFUSION: Long = 0x4b5a3c69
         private val DIGITS: ByteArray = "0123456789abcdef".encodeToByteArray()
 
@@ -123,9 +123,9 @@ class AccessTokenService(
             inMemoryCache.removeCachedValue<AccessToken>(preAccessTokenId)
         }
         // cache access token in redis
-        redisCache.setJsonAsync(accessToken.id.toAccessTokenKey(), accessToken, ACCESS_TOKEN_ALIVE_SECONDS)
+        redisCache.setJsonAsync(accessToken.id.toAccessTokenKey(), accessToken, ACCESS_TOKEN_TTL)
         // cache current access token id as previous id in redis
-        redisCache.setexAsync(preAccessTokenIdKey, ACCESS_TOKEN_ALIVE_SECONDS, accessToken.id)
+        redisCache.setexAsync(preAccessTokenIdKey, ACCESS_TOKEN_TTL, accessToken.id)
         // cache access token in in-memory cache
         inMemoryCache.cacheValue(accessToken.id, accessToken)
         return accessToken
@@ -143,19 +143,20 @@ class AccessTokenService(
         val cached = inMemoryCache.getCachedValue<AccessToken>(id)
         if (cached != null) {
             if (cached.isPresent && renewTtl) {
-                redisCache.expireAsync(key, ACCESS_TOKEN_ALIVE_SECONDS)
-                redisCache.setexAsync(cached.get().uid.toPreAccessTokenIdKey(), ACCESS_TOKEN_ALIVE_SECONDS, id)
+                redisCache.expireAsync(key, ACCESS_TOKEN_TTL)
+                redisCache.setexAsync(cached.get().uid.toPreAccessTokenIdKey(), ACCESS_TOKEN_TTL, id)
             }
             return CompletableFuture.completedStage(cached)
         }
         return if (renewTtl) {
-            redisCache.getJsonObjectAsync<AccessToken>(key, executor, ACCESS_TOKEN_ALIVE_SECONDS)
+            redisCache.getJsonObjectAsync<AccessToken>(key, AccessTokenImpl::class.java, executor, ACCESS_TOKEN_TTL)
         } else {
-            redisCache.getJsonObjectAsync<AccessToken>(key, executor)
+            redisCache.getJsonObjectAsync<AccessToken>(key, AccessTokenImpl::class.java, executor)
         }.thenApply {
+            logger.debug("cached access token: {}", it)
             it?.also { value ->
                 if (value.isPresent && renewTtl) {
-                    redisCache.setexAsync(value.get().uid.toPreAccessTokenIdKey(), ACCESS_TOKEN_ALIVE_SECONDS, id)
+                    redisCache.setexAsync(value.get().uid.toPreAccessTokenIdKey(), ACCESS_TOKEN_TTL, id)
                 }
             } ?: Optional.empty()
         }

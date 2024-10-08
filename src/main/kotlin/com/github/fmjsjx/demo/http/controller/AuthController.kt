@@ -78,7 +78,7 @@ class AuthController(
                 }
             }
             ProcedureResultData(result = result).apply {
-                sync = player
+                sync = player.toData()
                 force = 1
                 logger.debug("[api:auth] Guest login result: {}", this)
             }.let { ProcedureResult.ok(it) }

@@ -245,7 +245,7 @@ class PlayerService(
     ): R {
         (0..ConfigUtil.retryCount).forEach { retryCount ->
             try {
-                action(retryCount)
+                return action(retryCount)
             } catch (_: ConcurrentlyUpdateException) {
                 // auto retry when meet ConcurrentlyUpdateException
             }

@@ -3,7 +3,7 @@ package com.github.fmjsjx.demo.http.api
 import com.github.fmjsjx.demo.http.core.api.ProcedureContext
 import com.github.fmjsjx.demo.http.core.entity.model.Player
 
-class ProcedureResultData(
+data class ProcedureResultData(
     var result: Any? = null,
     var sync: Any? = null,
     var force: Int? = null,
@@ -38,7 +38,7 @@ class ProcedureResultData(
                 this.events = list + event
             }
         }
-        return this;
+        return this
     }
 
     fun appendEvents(events: Collection<String>): ProcedureResultData {

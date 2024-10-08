@@ -54,7 +54,7 @@ class RedisCacheService(
 
     fun <T : Any> getJsonObjectAsync(
         key: String,
-        type: Class<T>,
+        type: Class<out T>,
         executor: Executor,
         ttl: Long = 0,
         jsonDecoder: JsonDecoder<*> = jsoniterLibrary,
@@ -69,21 +69,21 @@ class RedisCacheService(
 
     fun <T : Any> getJsonAsync(
         key: String,
-        typeLiteral: TypeLiteral<T>,
+        typeLiteral: TypeLiteral<out T>,
         executor: Executor,
         ttl: Long = 0,
     ): CompletionStage<Optional<T>?> = getDataAsync(key, executor, ttl) { value -> value.parseJsoniter(typeLiteral) }
 
     fun <T : Any> getJsonAsync(
         key: String,
-        typeReference: Fastjson2TypeReference<T>,
+        typeReference: Fastjson2TypeReference<out T>,
         executor: Executor,
         ttl: Long = 0,
     ): CompletionStage<Optional<T>?> = getDataAsync(key, executor, ttl) { value -> value.parseFastjson2(typeReference) }
 
     fun <T : Any> getJsonAsync(
         key: String,
-        typeReference: TypeReference<T>,
+        typeReference: TypeReference<out T>,
         executor: Executor,
         ttl: Long = 0,
     ): CompletionStage<Optional<T>?> = getDataAsync(key, executor, ttl) { value -> value.parseJackson2(typeReference) }
@@ -166,7 +166,7 @@ class RedisCacheService(
         key: String,
         executor: Executor,
         ttl: Long,
-        type: Class<T>,
+        type: Class<out T>,
         jsonEncoder: JsonEncoder = fastjson2Library,
         jsonDecoder: JsonDecoder<*> = jsoniterLibrary,
         renewTtl: Boolean = false,
@@ -223,7 +223,7 @@ class RedisCacheService(
         key: String,
         executor: Executor,
         ttl: Long,
-        typeLiteral: TypeLiteral<T>,
+        typeLiteral: TypeLiteral<out T>,
         jsonEncoder: JsonEncoder = fastjson2Library,
         renewTtl: Boolean = false,
         getDataAsync: () -> R,
@@ -241,7 +241,7 @@ class RedisCacheService(
         key: String,
         executor: Executor,
         ttl: Long,
-        typeReference: Fastjson2TypeReference<T>,
+        typeReference: Fastjson2TypeReference<out T>,
         jsonEncoder: JsonEncoder = fastjson2Library,
         renewTtl: Boolean = false,
         getDataAsync: () -> R,
@@ -259,7 +259,7 @@ class RedisCacheService(
         key: String,
         executor: Executor,
         ttl: Long,
-        typeReference: TypeReference<T>,
+        typeReference: TypeReference<out T>,
         jsonEncoder: JsonEncoder = fastjson2Library,
         renewTtl: Boolean = false,
         getDataAsync: () -> R,
@@ -293,7 +293,7 @@ class RedisCacheService(
 
     suspend fun <T : Any> getJsonObject(
         key: String,
-        type: Class<T>,
+        type: Class<out T>,
         ttl: Long = 0,
         jsonDecoder: JsonDecoder<*> = jsoniterLibrary,
     ): Optional<T>? = getData(key, ttl) { value -> jsonDecoder.loads(value, type) }
@@ -306,19 +306,19 @@ class RedisCacheService(
 
     suspend fun <T : Any> getJson(
         key: String,
-        typeLiteral: TypeLiteral<T>,
+        typeLiteral: TypeLiteral<out T>,
         ttl: Long = 0,
     ): Optional<T>? = getData(key, ttl) { value -> value.parseJsoniter(typeLiteral) }
 
     suspend fun <T : Any> getJson(
         key: String,
-        typeReference: Fastjson2TypeReference<T>,
+        typeReference: Fastjson2TypeReference<out T>,
         ttl: Long = 0,
     ): Optional<T>? = getData(key, ttl) { value -> value.parseFastjson2(typeReference) }
 
     suspend fun <T : Any> getJson(
         key: String,
-        typeReference: TypeReference<T>,
+        typeReference: TypeReference<out T>,
         ttl: Long = 0,
     ): Optional<T>? = getData(key, ttl) { value -> value.parseJackson2(typeReference) }
 
@@ -390,7 +390,7 @@ class RedisCacheService(
     suspend fun <T : Any> retrieveJsonObject(
         key: String,
         ttl: Long,
-        type: Class<T>,
+        type: Class<out T>,
         jsonEncoder: JsonEncoder = fastjson2Library,
         jsonDecoder: JsonDecoder<*> = jsoniterLibrary,
         renewTtl: Boolean = false,
@@ -441,7 +441,7 @@ class RedisCacheService(
     suspend fun <T : Any> retrieveJson(
         key: String,
         ttl: Long,
-        typeLiteral: TypeLiteral<T>,
+        typeLiteral: TypeLiteral<out T>,
         jsonEncoder: JsonEncoder = fastjson2Library,
         renewTtl: Boolean = false,
         getData: suspend () -> T?,
@@ -457,7 +457,7 @@ class RedisCacheService(
     suspend fun <T : Any> retrieveJson(
         key: String,
         ttl: Long,
-        typeReference: Fastjson2TypeReference<T>,
+        typeReference: Fastjson2TypeReference<out T>,
         jsonEncoder: JsonEncoder = fastjson2Library,
         renewTtl: Boolean = false,
         getData: suspend () -> T?,
@@ -473,7 +473,7 @@ class RedisCacheService(
     suspend fun <T : Any> retrieveJson(
         key: String,
         ttl: Long,
-        typeReference: TypeReference<T>,
+        typeReference: TypeReference<out T>,
         jsonEncoder: JsonEncoder = fastjson2Library,
         renewTtl: Boolean = false,
         getData: suspend () -> T?,

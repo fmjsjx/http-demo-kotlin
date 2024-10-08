@@ -49,7 +49,7 @@ class AccountService(
         account.type = GUEST
         account.state = NORMAL
         account.udid = udid
-        account.slot = udid.hashCode() % 16
+        account.slot = udid.hashCode() and 0xf
         account.createdAt = System.currentTimeMillis()
         account.updatedAt = account.createdAt
         try {
