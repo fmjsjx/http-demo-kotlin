@@ -62,6 +62,8 @@ data class ProcedureResultData(
         return this
     }
 
+    fun toProcedureResult() = ProcedureResult.ok(this)
+
     companion object {
 
         fun of(result: Any, player: Player, retryCount: Int): ProcedureResultData =
