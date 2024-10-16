@@ -32,15 +32,15 @@ repositories {
     mavenCentral()
 }
 
-extra["mongodb.version"] = "5.1.4"
-extra["kotlin-coroutines.version"] = "1.8.1"
+extra["mongodb.version"] = "5.2.0"
+extra["kotlin-coroutines.version"] = "1.9.0"
 extra["r2dbc-mysql.version"] = "1.3.0"
 
 dependencies {
 
-    implementation(platform("com.github.fmjsjx:libcommon-bom:3.8.1"))
-    implementation(platform("com.github.fmjsjx:libnetty-bom:3.7.1"))
-    implementation(platform("com.github.fmjsjx:myboot-bom:3.3.0"))
+    implementation(platform("com.github.fmjsjx:libcommon-bom:3.9.0"))
+    implementation(platform("com.github.fmjsjx:libnetty-bom:3.7.2"))
+    implementation(platform("com.github.fmjsjx:myboot-bom:3.3.1"))
     implementation(platform("com.github.fmjsjx:bson-model-bom:2.1.1"))
 
     implementation("org.springframework.boot:spring-boot-starter")
@@ -67,6 +67,9 @@ dependencies {
     implementation(group = "io.netty", name = "netty-tcnative-boringssl-static", classifier = "linux-x86_64")
     implementation(group = "io.netty", name = "netty-tcnative-boringssl-static", classifier = "windows-x86_64")
     implementation(group = "io.netty", name = "netty-transport-native-epoll", classifier = "linux-x86_64")
+    val bcJavaLtsVersion = "2.73.6"
+    implementation("org.bouncycastle:bcpkix-lts8on:$bcJavaLtsVersion")
+    implementation("org.bouncycastle:bcprov-lts8on:$bcJavaLtsVersion")
     implementation("com.github.fmjsjx:libnetty-http-server")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("com.github.fmjsjx:libcommon-kotlin")
@@ -105,16 +108,4 @@ kotlin {
 tasks.withType<Test> {
     useJUnitPlatform()
     jvmArgs = listOf("-XX:+EnableDynamicAgentLoading")
-}
-
-tasks.withType<ProcessResources> {
-    filesMatching("**/application.yml") {
-        val projectInfo = mapOf(
-            "project.group" to project.group,
-            "project.name" to project.name,
-            "project.version" to project.version,
-            "project.description" to project.description,
-        )
-        expand(projectInfo)
-    }
 }
