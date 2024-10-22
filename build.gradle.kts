@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id("org.springframework.boot") version "3.3.4"
     id("io.spring.dependency-management") version "1.1.6"
-    val kotlinVersion = "2.0.20"
+    val kotlinVersion = "2.0.21"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
 }
@@ -41,7 +41,7 @@ dependencies {
     implementation(platform("com.github.fmjsjx:libcommon-bom:3.9.0"))
     implementation(platform("com.github.fmjsjx:libnetty-bom:3.7.2"))
     implementation(platform("com.github.fmjsjx:myboot-bom:3.3.1"))
-    implementation(platform("com.github.fmjsjx:bson-model-bom:2.1.1"))
+    implementation(platform("com.github.fmjsjx:bson-model-bom:2.2.0-RC1"))
 
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -100,7 +100,7 @@ dependencies {
 
 kotlin {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_21)
+        jvmTarget = JvmTarget.JVM_21
         freeCompilerArgs.addAll("-Xjsr305=strict", "-opt-in=kotlin.RequiresOptIn")
     }
 }
