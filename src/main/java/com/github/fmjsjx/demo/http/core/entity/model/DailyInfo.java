@@ -1,13 +1,16 @@
 package com.github.fmjsjx.demo.http.core.entity.model;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.github.fmjsjx.bson.model.core.BsonUtil;
 import com.github.fmjsjx.bson.model2.core.*;
+import com.github.fmjsjx.libcommon.util.DateTimeUtil;
 import com.mongodb.client.model.Updates;
 import org.bson.*;
 import org.bson.conversions.Bson;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class DailyInfo extends ObjectModel<DailyInfo> {
@@ -19,19 +22,20 @@ public class DailyInfo extends ObjectModel<DailyInfo> {
     public static final String BNAME_VIDEO_COUNTS = "vdcs";
     public static final String BNAME_GAMING_COUNT = "gct";
 
-    private int day;
+    private LocalDate day;
     private int coin;
     private int diamond;
     private int videoCount;
     private final SingleValueMapModel<Integer, Integer> videoCounts = SingleValueMapModel.integerKeysMap(SingleValueTypes.INTEGER).parent(this).key(BNAME_VIDEO_COUNTS).index(4);
     private int gamingCount;
 
-    public int getDay() {
+    public LocalDate getDay() {
         return day;
     }
 
-    public void setDay(int day) {
-        if (day != this.day) {
+    public void setDay(LocalDate day) {
+        Objects.requireNonNull(day, "day must not be null");
+        if (!day.equals(this.day)) {
             this.day = day;
             fieldChanged(0);
         }
@@ -122,7 +126,7 @@ public class DailyInfo extends ObjectModel<DailyInfo> {
     @Override
     public BsonDocument toBson() {
         var bson = new BsonDocument();
-        bson.append(BNAME_DAY, new BsonInt32(day));
+        bson.append(BNAME_DAY, new BsonInt32(DateTimeUtil.toNumber(day)));
         bson.append(BNAME_COIN, new BsonInt32(coin));
         bson.append(BNAME_DIAMOND, new BsonInt32(diamond));
         bson.append(BNAME_VIDEO_COUNT, new BsonInt32(videoCount));
@@ -134,7 +138,7 @@ public class DailyInfo extends ObjectModel<DailyInfo> {
     @Override
     public DailyInfo load(BsonDocument src) {
         resetStates();
-        day = BsonUtil.intValue(src, BNAME_DAY).orElseThrow();
+        day = BsonUtil.intValue(src, BNAME_DAY).stream().mapToObj(DateTimeUtil::toDate).findFirst().orElseThrow();
         coin = BsonUtil.intValue(src, BNAME_COIN).orElseThrow();
         diamond = BsonUtil.intValue(src, BNAME_DIAMOND).orElseThrow();
         videoCount = BsonUtil.intValue(src, BNAME_VIDEO_COUNT).orElseThrow();
@@ -146,13 +150,25 @@ public class DailyInfo extends ObjectModel<DailyInfo> {
     @Override
     public JsonNode toJsonNode() {
         var jsonNode = JsonNodeFactory.instance.objectNode();
-        jsonNode.put(BNAME_DAY, day);
+        jsonNode.put(BNAME_DAY, DateTimeUtil.toNumber(day));
         jsonNode.put(BNAME_COIN, coin);
         jsonNode.put(BNAME_DIAMOND, diamond);
         jsonNode.put(BNAME_VIDEO_COUNT, videoCount);
         jsonNode.set(BNAME_VIDEO_COUNTS, videoCounts.toJsonNode());
         jsonNode.put(BNAME_GAMING_COUNT, gamingCount);
         return jsonNode;
+    }
+
+    @Override
+    public JSONObject toFastjson2Node() {
+        var jsonObject = new JSONObject();
+        jsonObject.put(BNAME_DAY, DateTimeUtil.toNumber(day));
+        jsonObject.put(BNAME_COIN, coin);
+        jsonObject.put(BNAME_DIAMOND, diamond);
+        jsonObject.put(BNAME_VIDEO_COUNT, videoCount);
+        jsonObject.put(BNAME_VIDEO_COUNTS, videoCounts.toFastjson2Node());
+        jsonObject.put(BNAME_GAMING_COUNT, gamingCount);
+        return jsonObject;
     }
 
     @Override
@@ -224,7 +240,7 @@ public class DailyInfo extends ObjectModel<DailyInfo> {
 
     @Override
     public DailyInfo clean() {
-        day = 0;
+        day = null;
         coin = 0;
         diamond = 0;
         videoCount = 0;
@@ -258,7 +274,7 @@ public class DailyInfo extends ObjectModel<DailyInfo> {
             return;
         }
         if (changedFields.get(0)) {
-            updates.add(Updates.set(path().resolve(BNAME_DAY).value(), day));
+            updates.add(Updates.set(path().resolve(BNAME_DAY).value(), DateTimeUtil.toNumber(day)));
         }
         if (changedFields.get(1)) {
             updates.add(Updates.set(path().resolve(BNAME_COIN).value(), coin));
@@ -280,11 +296,22 @@ public class DailyInfo extends ObjectModel<DailyInfo> {
     @Override
     protected void loadObjectNode(JsonNode src) {
         resetStates();
-        day = BsonUtil.intValue(src, BNAME_DAY).orElseThrow();
+        day = BsonUtil.intValue(src, BNAME_DAY).stream().mapToObj(DateTimeUtil::toDate).findFirst().orElseThrow();
         coin = BsonUtil.intValue(src, BNAME_COIN).orElseThrow();
         diamond = BsonUtil.intValue(src, BNAME_DIAMOND).orElseThrow();
         videoCount = BsonUtil.intValue(src, BNAME_VIDEO_COUNT).orElseThrow();
         BsonUtil.objectValue(src, BNAME_VIDEO_COUNTS).ifPresentOrElse(videoCounts::load, videoCounts::clean);
+        gamingCount = BsonUtil.intValue(src, BNAME_GAMING_COUNT).orElseThrow();
+    }
+
+    @Override
+    protected void loadJSONObject(JSONObject src) {
+        resetStates();
+        day = BsonUtil.intValue(src, BNAME_DAY).stream().mapToObj(DateTimeUtil::toDate).findFirst().orElseThrow();
+        coin = BsonUtil.intValue(src, BNAME_COIN).orElseThrow();
+        diamond = BsonUtil.intValue(src, BNAME_DIAMOND).orElseThrow();
+        videoCount = BsonUtil.intValue(src, BNAME_VIDEO_COUNT).orElseThrow();
+        BsonUtil.objectValue(src, BNAME_VIDEO_COUNTS).ifPresentOrElse(videoCounts::loadFastjson2Node, videoCounts::clean);
         gamingCount = BsonUtil.intValue(src, BNAME_GAMING_COUNT).orElseThrow();
     }
 

@@ -1,5 +1,6 @@
 package com.github.fmjsjx.demo.http.core.entity.model;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.github.fmjsjx.bson.model.core.BsonUtil;
@@ -222,6 +223,26 @@ public class LoginInfo extends ObjectModel<LoginInfo> {
     }
 
     @Override
+    public JSONObject toFastjson2Node() {
+        var jsonObject = new JSONObject();
+        jsonObject.put(BNAME_COUNT, count);
+        jsonObject.put(BNAME_DAYS, days);
+        jsonObject.put(BNAME_CONTINUOUS_DAYS, continuousDays);
+        jsonObject.put(BNAME_MAX_CONTINUOUS_DAYS, maxContinuousDays);
+        jsonObject.put(BNAME_GAMING_DAYS, gamingDays);
+        jsonObject.put(BNAME_MAX_GAMING_DAYS, maxGamingDays);
+        var ip = this.ip;
+        if (ip != null) {
+            jsonObject.put(BNAME_IP, ip);
+        }
+        var loginTime = this.loginTime;
+        if (loginTime != null) {
+            jsonObject.put(BNAME_LOGIN_TIME, DateTimeUtil.toEpochMilli(loginTime));
+        }
+        return jsonObject;
+    }
+
+    @Override
     public Map<Object, Object> toData() {
         var data = new LinkedHashMap<>();
         data.put("count", count);
@@ -382,6 +403,19 @@ public class LoginInfo extends ObjectModel<LoginInfo> {
 
     @Override
     protected void loadObjectNode(JsonNode src) {
+        resetStates();
+        count = BsonUtil.intValue(src, BNAME_COUNT).orElseThrow();
+        days = BsonUtil.intValue(src, BNAME_DAYS).orElseThrow();
+        continuousDays = BsonUtil.intValue(src, BNAME_CONTINUOUS_DAYS).orElseThrow();
+        maxContinuousDays = BsonUtil.intValue(src, BNAME_MAX_CONTINUOUS_DAYS).orElseThrow();
+        gamingDays = BsonUtil.intValue(src, BNAME_GAMING_DAYS).orElseThrow();
+        maxGamingDays = BsonUtil.intValue(src, BNAME_MAX_GAMING_DAYS).orElseThrow();
+        ip = BsonUtil.stringValue(src, BNAME_IP).orElse(null);
+        loginTime = BsonUtil.dateTimeValue(src, BNAME_LOGIN_TIME).orElse(null);
+    }
+
+    @Override
+    protected void loadJSONObject(JSONObject src) {
         resetStates();
         count = BsonUtil.intValue(src, BNAME_COUNT).orElseThrow();
         days = BsonUtil.intValue(src, BNAME_DAYS).orElseThrow();

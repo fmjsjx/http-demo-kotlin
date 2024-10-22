@@ -1,9 +1,9 @@
 package com.github.fmjsjx.demo.http.core.service
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.github.fmjsjx.demo.http.api.ProcedureException
 import com.github.fmjsjx.demo.http.auth.AccessToken
 import com.github.fmjsjx.demo.http.common.redis.RedisWrapped
+import com.github.fmjsjx.demo.http.common.util.toJsonString
 import com.github.fmjsjx.demo.http.core.api.Events.CROSS_DAY
 import com.github.fmjsjx.demo.http.core.api.ProcedureContext
 import com.github.fmjsjx.demo.http.core.entity.model.Player
@@ -12,9 +12,8 @@ import com.github.fmjsjx.demo.http.core.entity.model.toBsonUpdate
 import com.github.fmjsjx.demo.http.core.entity.model.toUpdateFilter
 import com.github.fmjsjx.demo.http.exception.ConcurrentlyUpdateException
 import com.github.fmjsjx.demo.http.util.ConfigUtil
-import com.github.fmjsjx.libcommon.json.jackson2Library
-import com.github.fmjsjx.libcommon.json.parseJsonNode
-import com.github.fmjsjx.libcommon.json.toJsonString
+import com.github.fmjsjx.libcommon.json.parseJSONObject
+
 import com.github.fmjsjx.libcommon.redis.RedisDistributedLock
 import com.github.fmjsjx.libcommon.util.DateTimeUtil
 import com.github.fmjsjx.libcommon.util.RandomUtil
@@ -127,12 +126,12 @@ class PlayerService(
         // items
         // daily
         daily.apply {
-            day = DateTimeUtil.toNumber(accessToken.loginTime.toLocalDate())
+            day = accessToken.loginTime.toLocalDate()
         }
     }
 
     fun cacheAsync(player: Player): CompletionStage<String> =
-        redisCache.setJsonAsync(player.toCacheKey(), player.toJsonNode(), CACHE_TTL, jackson2Library)
+        redisCache.setDataAsync(player.toCacheKey(), player.toFastjson2Node(), CACHE_TTL) { it.toJsonString() }
 
     suspend fun createGuestPlayer(accessToken: AccessToken): Player =
         try {
@@ -149,8 +148,8 @@ class PlayerService(
         redisCache.retrieveData(
             uid.toCacheKey(),
             CACHE_TTL,
-            { it.toJsonNode().toJsonString() },
-            { Player().load(it.parseJsonNode<JsonNode>()) },
+            { it.toFastjson2Node().toJsonString() },
+            { Player().loadFastjson2Node(it.parseJSONObject()) },
             true,
         ) {
             playerCollection().find(eq(BNAME_UID, uid)).first().awaitSingle()?.let { Player().load(it) }
@@ -177,14 +176,15 @@ class PlayerService(
         // ...
         // check cross day
         val date = ctx.time.toLocalDate()
-        player.daily.takeIf { it.day != DateTimeUtil.toNumber(date) }?.apply {
+        player.daily.takeUnless { date.isEqual(it.day) }?.apply {
             // cross day
             changed = true
             ctx.event(CROSS_DAY)
             // fix login
             player.login.apply {
                 increaseDays()
-                if (DateTimeUtil.toNumber(date.minusDays(1)) == day) {
+                if (date.minusDays(1).isEqual(day)) {
+                    // cross day
                     increaseContinuousDays().takeIf { it > maxContinuousDays }?.let(::setMaxContinuousDays)
                     if (gamingCount == 0) {
                         gamingDays = 0
@@ -195,7 +195,7 @@ class PlayerService(
                 }
             }
             // fix daily values
-            day = DateTimeUtil.toNumber(date)
+            day = date
             // reset other data
             coin = 0
             diamond = 0

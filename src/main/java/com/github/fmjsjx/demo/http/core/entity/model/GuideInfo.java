@@ -1,5 +1,6 @@
 package com.github.fmjsjx.demo.http.core.entity.model;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.github.fmjsjx.bson.model.core.BsonUtil;
@@ -50,6 +51,13 @@ public class GuideInfo extends ObjectModel<GuideInfo> {
         var jsonNode = JsonNodeFactory.instance.objectNode();
         jsonNode.put(BNAME_STATUS, status);
         return jsonNode;
+    }
+
+    @Override
+    public JSONObject toFastjson2Node() {
+        var jsonObject = new JSONObject();
+        jsonObject.put(BNAME_STATUS, status);
+        return jsonObject;
     }
 
     @Override
@@ -117,6 +125,12 @@ public class GuideInfo extends ObjectModel<GuideInfo> {
 
     @Override
     protected void loadObjectNode(JsonNode src) {
+        resetStates();
+        status = BsonUtil.intValue(src, BNAME_STATUS).orElseThrow();
+    }
+
+    @Override
+    protected void loadJSONObject(JSONObject src) {
         resetStates();
         status = BsonUtil.intValue(src, BNAME_STATUS).orElseThrow();
     }

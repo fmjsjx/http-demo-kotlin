@@ -1,5 +1,7 @@
 package com.github.fmjsjx.demo.http.core.entity.model;
 
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.github.fmjsjx.bson.model.core.BsonUtil;
@@ -97,6 +99,23 @@ public class PreferencesInfo extends ObjectModel<PreferencesInfo> {
         }
         jsonNode.set(BNAME_ATTRIBUTES, attributes.toJsonNode());
         return jsonNode;
+    }
+
+    @Override
+    public JSONObject toFastjson2Node() {
+        var jsonObject = new JSONObject();
+        var custom = this.custom;
+        if (custom != null) {
+            jsonObject.put(BNAME_CUSTOM, custom);
+        }
+        var features = this.features;
+        if (features != null) {
+            var featuresJsonArray = new JSONArray(features.size());
+            featuresJsonArray.addAll(features);
+            jsonObject.put(BNAME_FEATURES, featuresJsonArray);
+        }
+        jsonObject.put(BNAME_ATTRIBUTES, attributes.toFastjson2Node());
+        return jsonObject;
     }
 
     @Override
@@ -235,6 +254,14 @@ public class PreferencesInfo extends ObjectModel<PreferencesInfo> {
         custom = BsonUtil.stringValue(src, BNAME_CUSTOM).orElse(null);
         features = BsonUtil.listValue(src, BNAME_FEATURES, JsonNode::textValue).orElse(null);
         BsonUtil.objectValue(src, BNAME_ATTRIBUTES).ifPresentOrElse(attributes::load, attributes::clean);
+    }
+
+    @Override
+    protected void loadJSONObject(JSONObject src) {
+        resetStates();
+        custom = BsonUtil.stringValue(src, BNAME_CUSTOM).orElse(null);
+        features = BsonUtil.listValue(src, BNAME_FEATURES, Object::toString).orElse(null);
+        BsonUtil.objectValue(src, BNAME_ATTRIBUTES).ifPresentOrElse(attributes::loadFastjson2Node, attributes::clean);
     }
 
     @Override

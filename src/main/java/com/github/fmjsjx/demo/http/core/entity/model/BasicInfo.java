@@ -1,5 +1,6 @@
 package com.github.fmjsjx.demo.http.core.entity.model;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.github.fmjsjx.bson.model.core.BsonUtil;
@@ -102,6 +103,21 @@ public class BasicInfo extends ObjectModel<BasicInfo> {
             jsonNode.put(BNAME_FACE_URL, faceUrl);
         }
         return jsonNode;
+    }
+
+    @Override
+    public JSONObject toFastjson2Node() {
+        var jsonObject = new JSONObject();
+        var nickname = this.nickname;
+        if (nickname != null) {
+            jsonObject.put(BNAME_NICKNAME, nickname);
+        }
+        jsonObject.put(BNAME_FACE_ID, faceId);
+        var faceUrl = this.faceUrl;
+        if (faceUrl != null) {
+            jsonObject.put(BNAME_FACE_URL, faceUrl);
+        }
+        return jsonObject;
     }
 
     @Override
@@ -224,6 +240,14 @@ public class BasicInfo extends ObjectModel<BasicInfo> {
 
     @Override
     protected void loadObjectNode(JsonNode src) {
+        resetStates();
+        nickname = BsonUtil.stringValue(src, BNAME_NICKNAME).orElse(null);
+        faceId = BsonUtil.intValue(src, BNAME_FACE_ID).orElseThrow();
+        faceUrl = BsonUtil.stringValue(src, BNAME_FACE_URL).orElse(null);
+    }
+
+    @Override
+    protected void loadJSONObject(JSONObject src) {
         resetStates();
         nickname = BsonUtil.stringValue(src, BNAME_NICKNAME).orElse(null);
         faceId = BsonUtil.intValue(src, BNAME_FACE_ID).orElseThrow();

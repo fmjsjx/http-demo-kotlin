@@ -1,5 +1,6 @@
 package com.github.fmjsjx.demo.http.core.entity.model;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.github.fmjsjx.bson.model.core.BsonUtil;
@@ -101,6 +102,15 @@ public class WalletInfo extends ObjectModel<WalletInfo> {
     }
 
     @Override
+    public JSONObject toFastjson2Node() {
+        var jsonObject = new JSONObject();
+        jsonObject.put(BNAME_COIN_TOTAL, coinTotal);
+        jsonObject.put(BNAME_COIN_USED, coinUsed);
+        jsonObject.put(BNAME_DIAMOND, diamond);
+        return jsonObject;
+    }
+
+    @Override
     public Map<Object, Object> toData() {
         var data = new LinkedHashMap<>();
         data.put("coinTotal", coinTotal);
@@ -183,6 +193,14 @@ public class WalletInfo extends ObjectModel<WalletInfo> {
 
     @Override
     protected void loadObjectNode(JsonNode src) {
+        resetStates();
+        coinTotal = BsonUtil.intValue(src, BNAME_COIN_TOTAL).orElseThrow();
+        coinUsed = BsonUtil.intValue(src, BNAME_COIN_USED).orElseThrow();
+        diamond = BsonUtil.intValue(src, BNAME_DIAMOND).orElseThrow();
+    }
+
+    @Override
+    protected void loadJSONObject(JSONObject src) {
         resetStates();
         coinTotal = BsonUtil.intValue(src, BNAME_COIN_TOTAL).orElseThrow();
         coinUsed = BsonUtil.intValue(src, BNAME_COIN_USED).orElseThrow();

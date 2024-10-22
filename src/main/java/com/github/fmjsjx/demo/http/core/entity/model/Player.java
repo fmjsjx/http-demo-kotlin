@@ -1,5 +1,6 @@
 package com.github.fmjsjx.demo.http.core.entity.model;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.github.fmjsjx.bson.model.core.BsonUtil;
@@ -225,6 +226,24 @@ public class Player extends RootModel<Player> {
         jsonNode.put(BNAME_CREATE_TIME, DateTimeUtil.toEpochMilli(createTime));
         jsonNode.put(BNAME_UPDATE_TIME, DateTimeUtil.toEpochMilli(updateTime));
         return jsonNode;
+    }
+
+    @Override
+    public JSONObject toFastjson2Node() {
+        var jsonObject = new JSONObject();
+        jsonObject.put(BNAME_UID, uid);
+        jsonObject.put(BNAME_PREFERENCES, preferences.toFastjson2Node());
+        jsonObject.put(BNAME_BASIC, basic.toFastjson2Node());
+        jsonObject.put(BNAME_LOGIN, login.toFastjson2Node());
+        jsonObject.put(BNAME_GUIDE, guide.toFastjson2Node());
+        jsonObject.put(BNAME_WALLET, wallet.toFastjson2Node());
+        jsonObject.put(BNAME_ITEMS, items.toFastjson2Node());
+        jsonObject.put(BNAME_STATISTICS, statistics.toFastjson2Node());
+        jsonObject.put(BNAME_DAILY, daily.toFastjson2Node());
+        jsonObject.put(BNAME_UPDATE_VERSION, updateVersion);
+        jsonObject.put(BNAME_CREATE_TIME, DateTimeUtil.toEpochMilli(createTime));
+        jsonObject.put(BNAME_UPDATE_TIME, DateTimeUtil.toEpochMilli(updateTime));
+        return jsonObject;
     }
 
     @Override
@@ -463,6 +482,23 @@ public class Player extends RootModel<Player> {
         BsonUtil.objectValue(src, BNAME_ITEMS).ifPresentOrElse(items::load, items::clean);
         BsonUtil.objectValue(src, BNAME_STATISTICS).ifPresentOrElse(statistics::load, statistics::clean);
         BsonUtil.objectValue(src, BNAME_DAILY).ifPresentOrElse(daily::load, daily::clean);
+        updateVersion = BsonUtil.intValue(src, BNAME_UPDATE_VERSION).orElseThrow();
+        createTime = BsonUtil.dateTimeValue(src, BNAME_CREATE_TIME).orElseThrow();
+        updateTime = BsonUtil.dateTimeValue(src, BNAME_UPDATE_TIME).orElseThrow();
+    }
+
+    @Override
+    protected void loadJSONObject(JSONObject src) {
+        resetStates();
+        uid = BsonUtil.longValue(src, BNAME_UID).orElseThrow();
+        BsonUtil.objectValue(src, BNAME_PREFERENCES).ifPresentOrElse(preferences::loadFastjson2Node, preferences::clean);
+        BsonUtil.objectValue(src, BNAME_BASIC).ifPresentOrElse(basic::loadFastjson2Node, basic::clean);
+        BsonUtil.objectValue(src, BNAME_LOGIN).ifPresentOrElse(login::loadFastjson2Node, login::clean);
+        BsonUtil.objectValue(src, BNAME_GUIDE).ifPresentOrElse(guide::loadFastjson2Node, guide::clean);
+        BsonUtil.objectValue(src, BNAME_WALLET).ifPresentOrElse(wallet::loadFastjson2Node, wallet::clean);
+        BsonUtil.objectValue(src, BNAME_ITEMS).ifPresentOrElse(items::loadFastjson2Node, items::clean);
+        BsonUtil.objectValue(src, BNAME_STATISTICS).ifPresentOrElse(statistics::loadFastjson2Node, statistics::clean);
+        BsonUtil.objectValue(src, BNAME_DAILY).ifPresentOrElse(daily::loadFastjson2Node, daily::clean);
         updateVersion = BsonUtil.intValue(src, BNAME_UPDATE_VERSION).orElseThrow();
         createTime = BsonUtil.dateTimeValue(src, BNAME_CREATE_TIME).orElseThrow();
         updateTime = BsonUtil.dateTimeValue(src, BNAME_UPDATE_TIME).orElseThrow();

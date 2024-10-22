@@ -115,7 +115,7 @@ models:
   type: object
   fields:
   - name: day
-    type: int required hidden
+    type: date required hidden
   - name: coin cn
     type: int required
   - name: diamond dm

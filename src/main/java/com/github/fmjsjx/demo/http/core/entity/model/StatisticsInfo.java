@@ -1,5 +1,6 @@
 package com.github.fmjsjx.demo.http.core.entity.model;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.github.fmjsjx.bson.model.core.BsonUtil;
@@ -93,6 +94,15 @@ public class StatisticsInfo extends ObjectModel<StatisticsInfo> {
         jsonNode.set(BNAME_VIDEO_COUNTS, videoCounts.toJsonNode());
         jsonNode.put(BNAME_GAMING_COUNT, gamingCount);
         return jsonNode;
+    }
+
+    @Override
+    public JSONObject toFastjson2Node() {
+        var jsonObject = new JSONObject();
+        jsonObject.put(BNAME_VIDEO_COUNT, videoCount);
+        jsonObject.put(BNAME_VIDEO_COUNTS, videoCounts.toFastjson2Node());
+        jsonObject.put(BNAME_GAMING_COUNT, gamingCount);
+        return jsonObject;
     }
 
     @Override
@@ -196,6 +206,14 @@ public class StatisticsInfo extends ObjectModel<StatisticsInfo> {
         resetStates();
         videoCount = BsonUtil.intValue(src, BNAME_VIDEO_COUNT).orElseThrow();
         BsonUtil.objectValue(src, BNAME_VIDEO_COUNTS).ifPresentOrElse(videoCounts::load, videoCounts::clean);
+        gamingCount = BsonUtil.intValue(src, BNAME_GAMING_COUNT).orElseThrow();
+    }
+
+    @Override
+    protected void loadJSONObject(JSONObject src) {
+        resetStates();
+        videoCount = BsonUtil.intValue(src, BNAME_VIDEO_COUNT).orElseThrow();
+        BsonUtil.objectValue(src, BNAME_VIDEO_COUNTS).ifPresentOrElse(videoCounts::loadFastjson2Node, videoCounts::clean);
         gamingCount = BsonUtil.intValue(src, BNAME_GAMING_COUNT).orElseThrow();
     }
 
