@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("org.springframework.boot") version "3.3.4"
+    id("org.springframework.boot") version "3.3.5"
     id("io.spring.dependency-management") version "1.1.6"
     val kotlinVersion = "2.0.21"
     kotlin("jvm") version kotlinVersion
@@ -39,8 +39,8 @@ extra["r2dbc-mysql.version"] = "1.3.0"
 dependencies {
 
     implementation(platform("com.github.fmjsjx:libcommon-bom:3.9.0"))
-    implementation(platform("com.github.fmjsjx:libnetty-bom:3.7.2"))
-    implementation(platform("com.github.fmjsjx:myboot-bom:3.3.1"))
+    implementation(platform("com.github.fmjsjx:libnetty-bom:3.7.3"))
+    implementation(platform("com.github.fmjsjx:myboot-bom:3.3.2"))
     implementation(platform("com.github.fmjsjx:bson-model-bom:2.2.0"))
 
     implementation("org.springframework.boot:spring-boot-starter")
