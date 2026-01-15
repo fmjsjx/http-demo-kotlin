@@ -1,9 +1,9 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("org.springframework.boot") version "3.3.5"
-    id("io.spring.dependency-management") version "1.1.6"
-    val kotlinVersion = "2.0.21"
+    id("org.springframework.boot") version "4.0.1"
+    id("io.spring.dependency-management") version "1.1.7"
+    val kotlinVersion = "2.3.0"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
 }
@@ -13,15 +13,26 @@ version = "1.0.0-SNAPSHOT"
 description = "Game Demo HTTP Server in Kotlin"
 
 java {
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
-@Suppress("UnstableApiUsage")
 configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
+    }
+}
+
+buildscript {
+    repositories {
+        maven {
+            url = uri("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/")
+        }
+        gradlePluginPortal()
+        mavenCentral()
     }
 }
 
@@ -32,56 +43,58 @@ repositories {
     mavenCentral()
 }
 
-extra["mongodb.version"] = "5.2.0"
-extra["kotlin-coroutines.version"] = "1.9.0"
-extra["r2dbc-mysql.version"] = "1.3.0"
+extra["kotlin-coroutines.version"] = "1.10.2"
+extra["lettuce.version"] = "7.2.1.RELEASE"
+extra["r2dbc-mysql.version"] = "1.4.1"
+extra["netty.version"] = "4.2.9.Final"
 
 dependencies {
 
-    implementation(platform("com.github.fmjsjx:libcommon-bom:3.9.0"))
-    implementation(platform("com.github.fmjsjx:libnetty-bom:3.7.3"))
-    implementation(platform("com.github.fmjsjx:myboot-bom:3.3.2"))
-    implementation(platform("com.github.fmjsjx:bson-model-bom:2.2.0"))
+    implementation(platform("com.github.fmjsjx:libcommon-bom:4.1.0"))
+    implementation(platform("com.github.fmjsjx:libnetty-bom:4.1.0-RC"))
+    implementation(platform("com.github.fmjsjx:myboot-bom:4.1.0-RC"))
+    implementation(platform("com.github.fmjsjx:bson-model-bom:2.2.3"))
 
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("com.github.fmjsjx:libcommon-util")
     implementation("com.github.fmjsjx:libcommon-bson-kotlin")
     implementation("com.github.fmjsjx:libcommon-collection")
     implementation("com.github.fmjsjx:libcommon-json-jackson2-kotlin")
+    implementation("com.github.fmjsjx:libcommon-json-jackson3-kotlin")
     implementation("com.github.fmjsjx:libcommon-json-jsoniter-kotlin")
     implementation("com.github.fmjsjx:libcommon-json-fastjson2-kotlin")
     implementation("com.github.fmjsjx:libcommon-redis-kotlin")
     implementation("com.github.fmjsjx:libcommon-yaml")
-    implementation("com.github.fmjsjx:myboot-starter-redis") {
-        exclude(group = "org.apache.commons", module = "commons-pool2")
-    }
-    implementation("com.github.fmjsjx:myboot-starter-mongodb")
-    implementation(group = "io.netty", name = "netty-tcnative-boringssl-static", classifier = "linux-x86_64")
-    implementation(group = "io.netty", name = "netty-tcnative-boringssl-static", classifier = "windows-x86_64")
-    implementation(group = "io.netty", name = "netty-transport-native-epoll", classifier = "linux-x86_64")
-    val bcJavaLtsVersion = "2.73.6"
-    implementation("org.bouncycastle:bcpkix-lts8on:$bcJavaLtsVersion")
-    implementation("org.bouncycastle:bcprov-lts8on:$bcJavaLtsVersion")
-    implementation("com.github.fmjsjx:libnetty-http-server")
-    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("com.github.fmjsjx:libcommon-kotlin")
     implementation("com.github.fmjsjx:libnetty-http-client")
-    implementation("com.github.fmjsjx:bson-model-core")
-    // R2DBC
-    implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+    implementation("com.github.fmjsjx:libnetty-http-server")
+    implementation("com.github.fmjsjx:myboot-starter-redis")
+    implementation("com.github.fmjsjx:myboot-starter-mongodb")
+    implementation("com.github.fmjsjx:myboot-starter-r2dbc")
+    val bouncyCastleJavaVersion = "1.83"
+    implementation("org.bouncycastle:bcpkix-jdk18on:$bouncyCastleJavaVersion")
+    implementation("org.bouncycastle:bcprov-jdk18on:$bouncyCastleJavaVersion")
+    implementation("io.netty:netty-tcnative-boringssl-static::linux-x86_64")
+    implementation("io.netty:netty-tcnative-boringssl-static::windows-x86_64")
+    implementation("io.netty:netty-transport-native-io_uring::linux-x86_64")
+    implementation("io.netty:netty-transport-native-epoll::linux-x86_64")
+    // R2DBC MySQL
     implementation("io.asyncer:r2dbc-mysql")
-    // java code generator
+    // BSON-model & java code generator
+    implementation("com.github.fmjsjx:bson-model-core")
     compileOnly("com.github.fmjsjx:bson-model-generator")
-    compileOnly("org.jruby:jruby:9.4.8.0")
+    compileOnly("org.jruby:jruby:10.0.2.0")
     // prometheus
     implementation("com.github.fmjsjx:libcommon-prometheus-client")
 
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
@@ -90,18 +103,21 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-    testImplementation("com.ninja-squad:springmockk:4.0.2")
-    testImplementation("io.mockk:mockk:1.13.12")
+    testImplementation("com.ninja-squad:springmockk:5.0.1")
+    testImplementation("io.mockk:mockk:1.14.7")
 }
 
 kotlin {
     compilerOptions {
-        jvmTarget = JvmTarget.JVM_21
+        jvmTarget = JvmTarget.JVM_25
         freeCompilerArgs.addAll("-Xjsr305=strict", "-opt-in=kotlin.RequiresOptIn")
     }
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
-    jvmArgs = listOf("-XX:+EnableDynamicAgentLoading")
+    jvmArgs = listOf(
+        "-Xshare:off",
+        "-XX:+EnableDynamicAgentLoading",
+    )
 }
