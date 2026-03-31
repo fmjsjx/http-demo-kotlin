@@ -1,9 +1,9 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("org.springframework.boot") version "4.0.1"
+    id("org.springframework.boot") version "4.0.4"
     id("io.spring.dependency-management") version "1.1.7"
-    val kotlinVersion = "2.3.0"
+    val kotlinVersion = "2.3.20"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
 }
@@ -44,16 +44,19 @@ repositories {
 }
 
 extra["kotlin-coroutines.version"] = "1.10.2"
-extra["lettuce.version"] = "7.2.1.RELEASE"
+extra["lettuce.version"] = "7.5.0.RELEASE"
 extra["r2dbc-mysql.version"] = "1.4.1"
-extra["netty.version"] = "4.2.9.Final"
+extra["netty.version"] = "4.2.12.Final"
+extra["logback.version"] = "1.5.32"
+extra["assertj.version"] = "3.27.7"
 
 dependencies {
 
-    implementation(platform("com.github.fmjsjx:libcommon-bom:4.1.0"))
-    implementation(platform("com.github.fmjsjx:libnetty-bom:4.1.0-RC"))
-    implementation(platform("com.github.fmjsjx:myboot-bom:4.1.0-RC"))
+    implementation(platform("com.github.fmjsjx:libcommon-bom:4.1.5"))
+    implementation(platform("com.github.fmjsjx:libnetty-bom:4.1.3"))
+    implementation(platform("com.github.fmjsjx:myboot-bom:4.1.3"))
     implementation(platform("com.github.fmjsjx:bson-model-bom:2.2.3"))
+    implementation(platform("com.github.fmjsjx:bson-model3-bom:3.0.0-alpha2"))
 
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -81,14 +84,15 @@ dependencies {
     implementation("org.bouncycastle:bcprov-jdk18on:$bouncyCastleJavaVersion")
     implementation("io.netty:netty-tcnative-boringssl-static::linux-x86_64")
     implementation("io.netty:netty-tcnative-boringssl-static::windows-x86_64")
-    implementation("io.netty:netty-transport-native-io_uring::linux-x86_64")
     implementation("io.netty:netty-transport-native-epoll::linux-x86_64")
     // R2DBC MySQL
     implementation("io.asyncer:r2dbc-mysql")
     // BSON-model & java code generator
     implementation("com.github.fmjsjx:bson-model-core")
     compileOnly("com.github.fmjsjx:bson-model-generator")
-    compileOnly("org.jruby:jruby:10.0.2.0")
+    implementation("com.github.fmjsjx:bson-model3-core")
+    compileOnly("com.github.fmjsjx:bson-model3-generator")
+    compileOnly("org.jruby:jruby:10.0.3.0")
     // prometheus
     implementation("com.github.fmjsjx:libcommon-prometheus-client")
 
@@ -104,7 +108,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("com.ninja-squad:springmockk:5.0.1")
-    testImplementation("io.mockk:mockk:1.14.7")
+    testImplementation("io.mockk:mockk:1.14.9")
 }
 
 kotlin {
@@ -117,7 +121,13 @@ kotlin {
 tasks.withType<Test> {
     useJUnitPlatform()
     jvmArgs = listOf(
-        "-Xshare:off",
+        "-server",
+        "-XX:+UseZGC",
+        "-XX:+UseCompactObjectHeaders",
         "-XX:+EnableDynamicAgentLoading",
+        "-Xshare:off",
+        "--enable-native-access=ALL-UNNAMED",
+        "--sun-misc-unsafe-memory-access=allow",
+        classpath.find { "mockito-core" in it.name }?.let { "-javaagent:${it.absolutePath}" } ?: "",
     )
 }
