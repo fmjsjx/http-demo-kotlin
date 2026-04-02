@@ -57,6 +57,7 @@ dependencies {
     implementation(platform("com.github.fmjsjx:myboot-bom:4.1.4"))
     implementation(platform("com.github.fmjsjx:bson-model-bom:2.2.3"))
     implementation(platform("com.github.fmjsjx:bson-model3-bom:3.0.0-alpha2"))
+    implementation(platform("org.bouncycastle:bc-jdk18on-bom:1.83"))
 
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -79,9 +80,8 @@ dependencies {
     implementation("com.github.fmjsjx:myboot-starter-redis")
     implementation("com.github.fmjsjx:myboot-starter-mongodb")
     implementation("com.github.fmjsjx:myboot-starter-r2dbc")
-    val bouncyCastleJavaVersion = "1.83"
-    implementation("org.bouncycastle:bcpkix-jdk18on:$bouncyCastleJavaVersion")
-    implementation("org.bouncycastle:bcprov-jdk18on:$bouncyCastleJavaVersion")
+    implementation("org.bouncycastle:bcpkix-jdk18on")
+    implementation("org.bouncycastle:bcprov-jdk18on")
     implementation("io.netty:netty-tcnative-boringssl-static::linux-x86_64")
     implementation("io.netty:netty-tcnative-boringssl-static::windows-x86_64")
     implementation("io.netty:netty-transport-native-epoll::linux-x86_64")
