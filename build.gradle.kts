@@ -54,7 +54,7 @@ dependencies {
 
     implementation(platform("com.github.fmjsjx:libcommon-bom:4.1.6"))
     implementation(platform("com.github.fmjsjx:libnetty-bom:4.1.5"))
-    implementation(platform("com.github.fmjsjx:myboot-bom:4.1.3"))
+    implementation(platform("com.github.fmjsjx:myboot-bom:4.1.4"))
     implementation(platform("com.github.fmjsjx:bson-model-bom:2.2.3"))
     implementation(platform("com.github.fmjsjx:bson-model3-bom:3.0.0-alpha2"))
 
