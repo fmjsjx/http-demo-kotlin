@@ -3,6 +3,7 @@ package com.github.fmjsjx.demo.http
 import com.github.fmjsjx.demo.http.core.service.InMemoryRollingCacheService
 import io.netty.util.concurrent.DefaultEventExecutor
 import io.netty.util.concurrent.DefaultThreadFactory
+import io.prometheus.metrics.model.registry.PrometheusRegistry
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.runApplication
@@ -27,6 +28,9 @@ class HttpDemoKotlinApplication {
             scheduledExecutor = globalScheduledExecutor,
             cacheInitialCapacity = 8192,
         )
+
+    @Bean
+    fun prometheusRegistry() : PrometheusRegistry = PrometheusRegistry()
 
 }
 

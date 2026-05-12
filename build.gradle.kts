@@ -1,9 +1,9 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("org.springframework.boot") version "4.0.5"
+    id("org.springframework.boot") version "4.0.6"
     id("io.spring.dependency-management") version "1.1.7"
-    val kotlinVersion = "2.3.20"
+    val kotlinVersion = "2.3.21"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
 }
@@ -44,20 +44,21 @@ repositories {
 }
 
 extra["kotlin-coroutines.version"] = "1.10.2"
-extra["lettuce.version"] = "7.5.0.RELEASE"
+extra["lettuce.version"] = "7.5.1.RELEASE"
 extra["r2dbc-mysql.version"] = "1.4.1"
 extra["netty.version"] = "4.2.12.Final"
 extra["logback.version"] = "1.5.32"
 extra["assertj.version"] = "3.27.7"
+extra["prometheus-client.version"] = "1.6.1"
 
 dependencies {
 
-    implementation(platform("com.github.fmjsjx:libcommon-bom:4.1.6"))
-    implementation(platform("com.github.fmjsjx:libnetty-bom:4.1.5"))
+    implementation(platform("com.github.fmjsjx:libcommon-bom:4.2.0-alpha1"))
+    implementation(platform("com.github.fmjsjx:libnetty-bom:4.2.0-alpha3"))
     implementation(platform("com.github.fmjsjx:myboot-bom:4.1.4"))
     implementation(platform("com.github.fmjsjx:bson-model-bom:2.2.3"))
     implementation(platform("com.github.fmjsjx:bson-model3-bom:3.0.0-alpha2"))
-    implementation(platform("org.bouncycastle:bc-jdk18on-bom:1.83"))
+    implementation(platform("org.bouncycastle:bc-jdk18on-bom:1.84"))
 
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -75,6 +76,7 @@ dependencies {
     implementation("com.github.fmjsjx:libcommon-redis-kotlin")
     implementation("com.github.fmjsjx:libcommon-yaml")
     implementation("com.github.fmjsjx:libcommon-kotlin")
+    implementation("com.github.fmjsjx:libcommon-prometheus-client")
     implementation("com.github.fmjsjx:libnetty-http-client")
     implementation("com.github.fmjsjx:libnetty-http-server")
     implementation("com.github.fmjsjx:myboot-starter-redis")
